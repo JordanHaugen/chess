@@ -30,7 +30,8 @@ To make a move, enter the starting square of the piece you want to move followed
 ###### Board Layout
 Here's a visual representation of the board with its coordinate system:
 
-```A B C D E F G H
+```
+  A B C D E F G H
 8 R N B Q K B N R 8
 7 P P P P P P P P 7
 6 . . . . . . . . 6
@@ -41,10 +42,10 @@ Here's a visual representation of the board with its coordinate system:
 1 R N B Q K B N R 1
   A B C D E F G H
 ```
-P = Pawn
-N = Knight
-B = Bishop
-R = Rook
-Q = Queen
-K = King
-. represents an empty square
+- P = Pawn
+- N = Knight
+- B = Bishop
+- R = Rook
+- Q = Queen
+- K = King
+- `.` represents an empty square
