@@ -6,7 +6,7 @@ Welcome to C++ Chess! This project is a simple implementation of the classic gam
 
 To run this game, you'll need a C++ compiler that supports C++11 or later. Most modern C++ compilers should suffice.
 
-### Compiling the Game
+## Compiling the Game
 
 1. Clone or download this repository to your local machine.
 2. Open a terminal and navigate to the project directory.
@@ -16,18 +16,18 @@ To run this game, you'll need a C++ compiler that supports C++11 or later. Most 
 g++ -std=c++11 main.cpp -o chessGame
 ```
 
-#### Running the Game
+## Running the Game
 After compilation, you can start the game by running the executable from your terminal:
 ```./chessgame```
 
-##### How to Play
+## How to Play
 The game follows standard chess rules and uses algebraic notation for moves. The board is displayed in a text-based format, with rows labeled A-H and columns labeled 1-8.
 
 To make a move, enter the starting square of the piece you want to move followed by the target square. For example, to move a pawn from b2 to b4, enter:
 
 ```b2 b4```
 
-###### Board Layout
+## Board Layout
 Here's a visual representation of the board with its coordinate system:
 
 ```
