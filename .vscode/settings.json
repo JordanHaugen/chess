@@ -1,0 +1,8 @@
+{
+    "cmake.configureOnOpen": true,
+    "files.associations": {
+        "*.ejs": "html",
+        "*.tmpl": "html",
+        "vector": "cpp"
+    }
+}
