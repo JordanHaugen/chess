@@ -1,0 +1,104 @@
+if(NOT SDL2_DIR)
+  set(SDL2_DIR "" CACHE PATH "SDL2 directory")
+endif()
+
+find_path(SDL2_INCLUDE_DIR SDL.h
+  HINTS
+    ENV SDL2DIR
+    ${SDL2_DIR}
+  PATH_SUFFIXES SDL2
+                include/SDL2 include
+)
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(VC_LIB_PATH_SUFFIX lib/x64)
+else()
+  set(VC_LIB_PATH_SUFFIX lib/x86)
+endif()
+
+find_library(SDL2_LIBRARY_TEMP
+  NAMES SDL2
+  HINTS
+    ENV SDL2DIR
+    ${SDL2_DIR}
+  PATH_SUFFIXES lib ${VC_LIB_PATH_SUFFIX}
+)
+
+set_property(CACHE SDL2_LIBRARY_TEMP PROPERTY TYPE INTERNAL)
+
+if(NOT SDL2_BUILDING_LIBRARY)
+  if(NOT SDL2_INCLUDE_DIR MATCHES ".framework")
+
+    find_library(SDL2MAIN_LIBRARY
+      NAMES SDL2main
+      HINTS
+        ENV SDL2DIR
+        ${SDL2_DIR}
+      PATH_SUFFIXES lib ${VC_LIB_PATH_SUFFIX}
+      PATHS
+      /sw
+      /opt/local
+      /opt/csw
+      /opt
+    )
+  endif()
+endif()
+
+if(NOT APPLE)
+  find_package(Threads)
+endif()
+
+if(MINGW)
+  set(MINGW32_LIBRARY mingw32 "-mwindows" CACHE STRING "link flags for MinGW")
+endif()
+
+if(SDL2_LIBRARY_TEMP)
+  # For SDLmain
+  if(SDL2MAIN_LIBRARY AND NOT SDL2_BUILDING_LIBRARY)
+    list(FIND SDL2_LIBRARY_TEMP "${SDLMAIN_LIBRARY}" _SDL2_MAIN_INDEX)
+    if(_SDL2_MAIN_INDEX EQUAL -1)
+      set(SDL2_LIBRARY_TEMP "${SDLMAIN_LIBRARY}" ${SDL2_LIBRARY_TEMP})
+    endif()
+    unset(_SDL2_MAIN_INDEX)
+  endif()
+
+  if(APPLE)
+    set(SDL2_LIBRARY_TEMP ${SDL2_LIBRARY_TEMP} "-framework Cocoa")
+  endif()
+
+  if(NOT APPLE)
+    set(SDL2_LIBRARY_TEMP ${SDL2_LIBRARY_TEMP} ${CMAKE_THREAD_LIBS_INIT})
+  endif()
+
+  # For MinGW library
+  if(MINGW)
+    set(SDL2_LIBRARY_TEMP ${MINGW32_LIBRARY} ${SDL2_LIBRARY_TEMP})
+  endif()
+
+  set(SDL2_LIBRARY ${SDL2_LIBRARY_TEMP} CACHE STRING "Where the SDL Library can be found")
+endif()
+
+if(SDL2_INCLUDE_DIR AND EXISTS "${SDL2_INCLUDE_DIR}/SDL2_version.h")
+  file(STRINGS "${SDL2_INCLUDE_DIR}/SDL2_version.h" SDL2_VERSION_MAJOR_LINE REGEX "^#define[ \t]+SDL2_MAJOR_VERSION[ \t]+[0-9]+$")
+  file(STRINGS "${SDL2_INCLUDE_DIR}/SDL2_version.h" SDL2_VERSION_MINOR_LINE REGEX "^#define[ \t]+SDL2_MINOR_VERSION[ \t]+[0-9]+$")
+  file(STRINGS "${SDL2_INCLUDE_DIR}/SDL2_version.h" SDL2_VERSION_PATCH_LINE REGEX "^#define[ \t]+SDL2_PATCHLEVEL[ \t]+[0-9]+$")
+  string(REGEX REPLACE "^#define[ \t]+SDL2_MAJOR_VERSION[ \t]+([0-9]+)$" "\\1" SDL2_VERSION_MAJOR "${SDL2_VERSION_MAJOR_LINE}")
+  string(REGEX REPLACE "^#define[ \t]+SDL2_MINOR_VERSION[ \t]+([0-9]+)$" "\\1" SDL2_VERSION_MINOR "${SDL2_VERSION_MINOR_LINE}")
+  string(REGEX REPLACE "^#define[ \t]+SDL2_PATCHLEVEL[ \t]+([0-9]+)$" "\\1" SDL2_VERSION_PATCH "${SDL2_VERSION_PATCH_LINE}")
+  set(SDL2_VERSION_STRING ${SDL2_VERSION_MAJOR}.${SDL2_VERSION_MINOR}.${SDL2_VERSION_PATCH})
+  unset(SDL2_VERSION_MAJOR_LINE)
+  unset(SDL2_VERSION_MINOR_LINE)
+  unset(SDL2_VERSION_PATCH_LINE)
+  unset(SDL2_VERSION_MAJOR)
+  unset(SDL2_VERSION_MINOR)
+  unset(SDL2_VERSION_PATCH)
+endif()
+
+set(SDL2_LIBRARIES ${SDL2_LIBRARY} ${SDL2MAIN_LIBRARY})
+set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
+
+include(FindPackageHandleStandardArgs)
+
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(SDL
+                                  REQUIRED_VARS SDL2_LIBRARY SDL2_INCLUDE_DIR
+                                  VERSION_VAR SDL2_VERSION_STRING)
